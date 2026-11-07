@@ -1,26 +1,120 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  color-scheme: dark;
+  --bg: #04050d;
+  --neon-cyan: #22d3ee;
+  --neon-violet: #a855f7;
+  --neon-pink: #ec4899;
+}
+
+html {
+  background: var(--bg);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: #e2e8f0;
+}
+
+/* Fondo: rejilla en perspectiva + orbes de luz animados */
+.space-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.space-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(34, 211, 238, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34, 211, 238, 0.07) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 100%);
+}
+.orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  opacity: 0.35;
+  animation: drift 18s ease-in-out infinite alternate;
+}
+.orb-1 { width: 520px; height: 520px; top: -160px; left: -120px; background: var(--neon-violet); }
+.orb-2 { width: 460px; height: 460px; top: 30%; right: -160px; background: var(--neon-cyan); animation-delay: -6s; opacity: 0.22; }
+.orb-3 { width: 380px; height: 380px; bottom: -180px; left: 35%; background: var(--neon-pink); animation-delay: -12s; opacity: 0.16; }
+
+@keyframes drift {
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(60px, 40px) scale(1.15); }
+}
+
+/* Paneles de vidrio */
+@utility glass {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  backdrop-filter: blur(18px) saturate(140%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 20px 50px -20px rgba(0, 0, 0, 0.7);
+}
+
+/* Texto con degradado neón */
+@utility neon-text {
+  background: linear-gradient(90deg, #67e8f9, #a78bfa 55%, #f472b6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Borde que brilla al pasar el mouse */
+@utility glow-hover {
+  transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+  &:hover {
+    border-color: rgba(34, 211, 238, 0.45);
+    box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.15), 0 0 32px -6px rgba(34, 211, 238, 0.45);
+    transform: translateY(-2px);
+  }
+}
+
+/* Barra superior luminosa */
+@utility scan-line {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--neon-cyan), var(--neon-violet), transparent);
+    opacity: 0.7;
+  }
+}
+
+/* Entrada suave de elementos */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@utility animate-rise {
+  animation: rise 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+/* Inputs: el icono del calendario/número en oscuro */
+input[type="number"]::-webkit-inner-spin-button { opacity: 0.4; }
+select option { background: #0b0d1a; color: #e2e8f0; }
+
+::selection { background: rgba(168, 85, 247, 0.4); }
+
+@media (prefers-reduced-motion: reduce) {
+  .orb, .animate-rise { animation: none; }
 }
